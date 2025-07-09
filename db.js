@@ -1,25 +1,20 @@
-// // db.js
-// const { Pool } = require('pg');
-// require('dotenv').config();
-
-// const pool = new Pool({
-//     connectionString: process.env.DATABASE_URL || 'postgres://postgres:qawqaw@localhost:5432/portfolio_db'
-// });
-
-// module.exports = pool;
-
 // db.js
 const { Pool } = require('pg');
 require('dotenv').config();
 
-const connectionString = process.env.DATABASE_URL || 'postgres://postgres:qawqaw@localhost:5432/portfolio_db';
-
+// Use DATABASE_URL from environment; throw error if not set to avoid hardcoding credentials
+const connectionString = process.env.DATABASE_URL;
 if (!connectionString) {
-    throw new Error('DATABASE_URL is not set and no fallback connection string is provided.');
+    // Enforce DATABASE_URL in production environments
+    if (process.env.NODE_ENV === 'production' && !process.env.DATABASE_URL) {
+        throw new Error('No DATABASE_URL environment variable is set. The application cannot start without this variable.');
+    }
+    // if (!process.env.DATABASE_URL) {
+    //     throw new Error('No DATABASE_URL environment variable is set. The application cannot start without this variable.');
+    // }
 }
 
 const pool = new Pool({
     connectionString,
 });
 
-module.exports = pool;
